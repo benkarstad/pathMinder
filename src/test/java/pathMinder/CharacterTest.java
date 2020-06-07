@@ -2,8 +2,9 @@ package pathMinder;
 
 import java.util.ArrayList;
 
-import org.junit.Test;
-import static org.junit.Assert.*;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CharacterTest {
 
@@ -14,15 +15,15 @@ public class CharacterTest {
 
 		if (character.getInventory().size() == 0) {
 			assertEquals(
-					String.format("Character.getEncumbrance(): a character with am empty inventory should be at light encumbrance, not %s", encumbrance),
 					Encumbrance.Light,
-					encumbrance);
+					encumbrance,
+					String.format("Character.getEncumbrance(): a character with am empty inventory should be at light encumbrance, not %s", encumbrance));
 		}
 
 		while(character.pick(new Barrel())) assertNotEquals(
-				"Character.getEncumbrance(): a character should not be able to attain Atlassian encumbrance from picking items",
 				Encumbrance.Atlassian,
-				character.getEncumbrance());
+				character.getEncumbrance(),
+				"Character.getEncumbrance(): a character should not be able to attain Atlassian encumbrance from picking items");
 	}
 
 	@Test
@@ -31,20 +32,20 @@ public class CharacterTest {
 		ArrayList<Item> items = new ArrayList<>(10);
 
 		//pick up a bunch of coins
-		for(int count = 0; count < 10; count++) assertTrue("Character.pick(Item): new items were not picked up.", items.add(new GoldCoin()));
+		for(int count = 0; count < 10; count++) assertTrue(items.add(new GoldCoin()), "Character.pick(Item): new items were not picked up.");
 		for(Item item : items) character.pick(item);
 
 		//check that all items are present
 		assertEquals(
-				"Character.pick(Item): character should have 10 items in inventory",
 				10,
-				character.getInventory().size());
+				character.getInventory().size(),
+				"Character.pick(Item): character should have 10 items in inventory");
 
-		assertTrue("Character.pick(Item): all items added should be in inventory", character.getInventory().containsAll(items));
+		assertTrue(character.getInventory().containsAll(items), "Character.pick(Item): all items added should be in inventory");
 
-		for(Item item : items) assertTrue(String.format("Character.has(Item): character should have %s", item), character.has(item));
+		for(Item item : items) assertTrue(character.has(item), String.format("Character.has(Item): character should have %s", item));
 
-		assertTrue(String.format("Character.hasAll(Collection<Item>): character should have all of %s", items), character.hasAll(items));
+		assertTrue(character.hasAll(items), String.format("Character.hasAll(Collection<Item>): character should have all of %s", items));
 
 		for(Item item : items) assertTrue(character.drop(item));
 		assertEquals(0, character.getInventory().size());
