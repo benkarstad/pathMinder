@@ -10,7 +10,7 @@ While currently only built for the Pathfinder 1<sup>st</sup> Edition system,
 it is designed with modularity and extensibility in mind.
 
 PathMinder is currently in Alpha development and is by no means complete;
-There are no guaranties that any existing source code or API's will remain unchanged.
+There are no guaranties that any existing source code or APIs will remain unchanged.
 Feel free to give the source a dive and contribute.
 
 ---
@@ -30,7 +30,8 @@ This software uses trademarks and/or copyrights owned by Paizo Inc.,
 which are used under Paizo's Community Use Policy.
 We are expressly prohibited from charging you to use or access this content.
 This software is not published, endorsed, or specifically approved by Paizo Inc.
-For more information about Paizo's Community Use Policy, please visit paizo.com/communityuse.
+For more information about Paizo's Community Use Policy,
+please visit [paizo.com/communityuse](http://www.paizo.com/communityuse).
 For more information about Paizo Inc. and Paizo products, please visit paizo.com.
 
 Copyright (c) 2020, Benjamin Karstad
