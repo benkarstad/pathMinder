@@ -1,6 +1,6 @@
 package pathMinder;
 
-import java.util.Comparator;
+import java.util.Collection;
 
 /**
  * A physical item. Items have a number of attributes; some, like their weight, can be easily determined by empirical means.
@@ -15,9 +15,20 @@ import java.util.Comparator;
  * while still providing the full features of pathMinder's inventory system.
  * <p>
  * TODO: Implement intel based parameters;
- * TODO: [LOW] Link items back to their Container
  */
 public abstract class Item {
+
+	/**
+	 * Removes all the items in toRemove from their containers.
+	 * @param toRemove the collection of Items to be removed
+	 * @return true if all items were successfully removed
+	 */
+	public static boolean removeItems(Collection<? extends Item> toRemove) {
+		boolean flag = true;
+		for(Item item : toRemove.toArray(new Item[0])) if(!item.remove()) flag = false;
+		return flag;
+	}
+
 	/**
 	 * The name that identifies similar instances of an item. This does not uniquely identify this item,
 	 * to do that, the player may give their item a nickname.
@@ -38,6 +49,7 @@ public abstract class Item {
 	 */
 	public String nickName;
 	public String description;
+	private Container container = null; //the Container this item is within
 
 	protected Item(String name, float weight, float cost) {
 		this.name = name;
@@ -52,17 +64,41 @@ public abstract class Item {
 	 * @see Container
 	 * @return the weight of the item
 	 */
-	public float getWeight() {
-		return weight;
-	}
+	public float getWeight() { return weight; }
 
 	/**
 	 * @return the cost of the item
 	 */
-	public float getCost(){return cost;}
+	public float getCost(){ return cost; }
 
 	/**
 	 * @return the name of the item
 	 */
-	public String getName() {return name;}
+	public String getName() { return name; }
+
+	public boolean remove() { return container.remove(this); }
+
+	Container getContainer() { return container; }
+
+	/**
+	 * Called by a container that this item has been added to
+	 * in order to maintain the doubly linked tree structure of inventories.
+	 * If newContainer==null, then this item effectively becomes the root of a new inventory tree.
+	 * <p>
+	 * @param newContainer the container this is being added to
+	 * @return true if this Item's container was changed to newContainer
+	 * @see Container
+	 */
+	boolean setContainer(Container newContainer) {
+		if(newContainer == null && !container.contains(this)) { //parented to null
+			container = null;
+			return true;
+		}
+		if(!newContainer.contains(this)) return false; //do not put 'this' in items that do not contain it
+
+		if(container != null) this.container.remove(this); //remove 'this' from it's previous container
+		this.container = newContainer; //add 'this' to it's new container
+
+		return true;
+	}
 }
