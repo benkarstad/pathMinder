@@ -9,6 +9,7 @@ public class Character {
 	private String name;
 
 	private int baseStrength;
+	@SuppressWarnings("unused")
 	private int baseSpeed;
 
 	private Inventory inventory;

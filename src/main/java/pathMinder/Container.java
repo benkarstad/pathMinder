@@ -18,16 +18,17 @@ import java.util.*;
  * <p>
  * TODO: add maxVolume and maxCount;
  */
-public class Container extends Item implements  Set<Item>{
+public class Container extends Item implements  Set<Item> {
 
 	public static float getWeight(Collection<? extends Item> items) {
-		float weight = (float) 0.0;
+		float weight = 0.0f;
 		for(Item item : items) { weight += item.getWeight(); }
 		return weight;
 	}
+	
 	public static float getWeight(Container items) { return items.getWeight(); }
 
-	private final LinkedHashSet<Item> contents;
+	private final HashSet<Item> contents;
 	private final float maxWeight; //the maximum weight a container can hold
 
 	/**
@@ -37,7 +38,7 @@ public class Container extends Item implements  Set<Item>{
 	private int modCount = 0;
 
 
-	protected Container(Collection<Item> contents, String name, float weight, float maxWeight, float cost) throws TooManyItemsException {
+	protected Container(Collection<Item> contents, String name, float weight, float maxWeight, int cost) throws TooManyItemsException {
 		super(name, weight, cost);
 		if(contents != null && Container.getWeight(contents) > maxWeight) throw new TooManyItemsException("Contents exceed container's maximum weight");
 		this.maxWeight = maxWeight+weight;

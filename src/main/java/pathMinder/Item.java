@@ -35,10 +35,10 @@ public abstract class Item {
 	 */
 	private final String name;
 	/**
-	 * The true base value of this item, measured in gold pieces. This number may be affected by other factors,
+	 * The true base value of this item, measured in copper pieces. This number may be affected by other factors,
 	 * such as being broken or masterwork.
 	 */
-	private final float cost;
+	private final int cost;
 	/**
 	 * The weight of this item, measured in pounds.
 	 */
@@ -51,10 +51,14 @@ public abstract class Item {
 	public String description;
 	private Container container = null; //the Container this item is within
 
-	protected Item(String name, float weight, float cost) {
+	protected Item(String name, float weight, int cost) {
 		this.name = name;
 		this.weight = weight;
 		this.cost = cost;
+	}
+
+	protected Item(Item item) {
+		this(item.name, item.weight, item.cost);
 	}
 
 	/**
