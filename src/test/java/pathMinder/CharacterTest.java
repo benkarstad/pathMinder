@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class CharacterTest {
 
 	@Test
-	public void encumbrance() {
+	public void testEncumbrance() {
 		Character character = new Character("Steve", 12, 30);
 		Encumbrance encumbrance = character.getEncumbrance();
 
@@ -27,7 +27,7 @@ public class CharacterTest {
 	}
 
 	@Test
-	public void inventory() {
+	public void testInventory() {
 		Character character = new Character("Steve", 12, 30);
 		ArrayList<Item> items = new ArrayList<>(10);
 

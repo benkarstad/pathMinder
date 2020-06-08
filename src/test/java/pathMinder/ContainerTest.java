@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ContainerTest {
 
 	@Test
-	public void add() {
+	public void testAdd() {
 		Box box = new Box();
 		for(int i = 0; i < 10; i++) {
 			assertTrue(box.add(new Ball()), "box was already full");
@@ -22,7 +22,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void remove() {
+	public void testRemove() {
 		Box box = new Box();
 		Box innerBox = new Box();
 		Ball ball = new Ball();
@@ -38,7 +38,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void getWeight() {
+	public void testGetWeight() {
 		//test empty weight
 		for(int i = 0; i < 100; i += 25) {
 			assertEquals(i, new Container(null, "TestContainer", i, 10, 1).getWeight());
@@ -76,7 +76,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void size()  {
+	public void testSize()  {
 		//test empty container
 		assertEquals(0, new Box().size(), "empty box should have size of zero");
 
@@ -109,7 +109,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void fits() {
+	public void testFits() {
 		//TooManyItems
 		{
 			Box box = new Box();
@@ -139,7 +139,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void contains() {
+	public void testContains() {
 
 		//self containing
 		{
@@ -195,7 +195,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void containsAll() {
+	public void testContainsAll() {
 
 		//throws on a null collection
 		assertThrows(NullPointerException.class, ()-> new Box().containsAll(null));
@@ -241,7 +241,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void iterator() {
+	public void testIterator() {
 		Container box = new Box();
 		LinkedHashSet<Item> innerItems= new LinkedHashSet<>();
 
