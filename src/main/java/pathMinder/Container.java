@@ -99,7 +99,12 @@ public class Container extends Item implements  Set<Item> {
 	 * @see Set
 	 */
 	@Override
-	public boolean add(Item newItem) throws TooManyItemsException, IllegalArgumentException{
+	public boolean add(Item newItem) throws TooManyItemsException, IllegalArgumentException {
+		if(newItem == null) throw new NullPointerException(); //null item
+
+		if(newItem.isContained())
+			return false;
+
 		//failure case
 		if(this.contains(newItem)) return false;
 
@@ -108,6 +113,7 @@ public class Container extends Item implements  Set<Item> {
 			throw new TooManyItemsException("Unable to add item to container.");
 
 		//success case
+		newItem.setContained(true);
 		wasModified();
 		contents.add(newItem);
 		return true;
@@ -165,6 +171,7 @@ public class Container extends Item implements  Set<Item> {
 		if(!(o instanceof Item)) return false; //Containers only hold Items
 
 		if(contents.remove(o)) { //base case
+			((Item) o).setContained(false);
 			wasModified();
 			return true;
 		}

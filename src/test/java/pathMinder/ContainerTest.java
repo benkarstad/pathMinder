@@ -27,6 +27,8 @@ public class ContainerTest {
 		Box innerBox = new Box();
 		Ball ball = new Ball();
 		innerBox.add(ball);
+		Box innerBox2 = new Box();
+		assertFalse(innerBox2.add(ball), "Ball is in another container.");
 
 		assertFalse(box.remove(ball), "ball was not yet within box");
 		box.add(innerBox);
@@ -35,6 +37,7 @@ public class ContainerTest {
 		assertTrue(box.remove(innerBox), "innerBox should've been removed");
 		//assertNull(ball.getContainer(), "removed ball should no longer have a parent"); ----Removal of items referencing their containers nullifies this test.----
 		assertEquals(0, innerBox.size(), "innerBox should be empty");
+		assertTrue(innerBox2.add(ball), "Ball should not be in another container.");
 	}
 
 	@Test

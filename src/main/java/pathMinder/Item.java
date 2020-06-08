@@ -37,12 +37,13 @@ public abstract class Item {
 	 */
 	public String nickName;
 	public String description;
-	private Container container = null; //the Container this item is within
+	private boolean contained;
 
 	protected Item(String name, float weight, int cost) {
 		this.name = name;
 		this.weight = weight;
 		this.cost = cost;
+		this.contained = false;
 	}
 
 	protected Item(Item item) {
@@ -67,4 +68,11 @@ public abstract class Item {
 	 * @return the name of the item
 	 */
 	public String getName() { return name; }
+
+	public void setContained(boolean contained) { this.contained = contained; }
+
+	/**
+	 * @return if the item is contained within a container
+	 */
+	public boolean isContained() { return contained; }
 }
