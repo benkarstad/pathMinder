@@ -41,7 +41,7 @@ public class Container extends Item implements  Set<Item> {
 	protected Container(Collection<Item> contents, String name, float weight, float maxWeight, int cost) throws TooManyItemsException {
 		super(name, weight, cost);
 		if(contents != null && Container.getWeight(contents) > maxWeight) throw new TooManyItemsException("Contents exceed container's maximum weight");
-		this.maxWeight = maxWeight+weight;
+		this.maxWeight = maxWeight;
 		this.contents = (contents == null) ? new LinkedHashSet<>(15) : new LinkedHashSet<>(contents);
 	}
 
@@ -54,9 +54,22 @@ public class Container extends Item implements  Set<Item> {
 	public float getWeight() {
 		float totalWeight = super.getWeight();
 		for(Item item : contents) {
-			totalWeight+=item.getWeight();
+			totalWeight += item.getWeight();
 		}
 		return  totalWeight;
+	}
+
+	/**
+	 * Calculates the container's contents.
+	 * This method will recursively traverse the entire contents of itself.
+	 * @return the weight of all of its contents.
+	 */
+	public float getContentsWeight() { 
+		float totalWeight = 0;
+		for(Item item : contents) {
+			totalWeight += item.getWeight();
+		}
+		return totalWeight;
 	}
 
 	/**
@@ -66,9 +79,8 @@ public class Container extends Item implements  Set<Item> {
 	 * @return false if attempting to add the specified element to this container would result in an exception
 	 */
 	public boolean fits(Item item) {
-		if(
-			item == null  ||//no null elements
-			getWeight() + item.getWeight() > maxWeight || //weight restriction
+		if(item == null) throw new NullPointerException(); //null item
+		if(getContentsWeight() + item.getWeight() > maxWeight || //weight restriction
 			item instanceof Container && (item == this || ((Container) item).contains(this))) //self-containing restriction
 			return false;
 
@@ -91,25 +103,19 @@ public class Container extends Item implements  Set<Item> {
 		//failure case
 		if(this.contains(newItem)) return false;
 
-		//exception cases
-		if(newItem == null) throw new NullPointerException(); //null item
-		if(getWeight() + newItem.getWeight() > maxWeight) throw new TooManyItemsException("Container would become too heavy"); //weight restriction
-		if(newItem instanceof Container && (newItem == this || ((Container) newItem).contains(this)))
-			throw new IllegalArgumentException("That would be a topological challenge..."); //placing an item inside of itself
+		//Check if the item can fit inside the container.
+		if(!fits(newItem))
+			throw new TooManyItemsException("Unable to add item to container.");
 
 		//success case
 		wasModified();
 		contents.add(newItem);
-		newItem.setContainer(this);
 		return true;
 	}
 
 
 	@Override
 	public boolean addAll(Collection<? extends Item> items){ throw new UnsupportedOperationException(); }
-
-
-
 
 	/**
 	 * Returns true if the specified item is within this item or any of its contents.
@@ -159,12 +165,16 @@ public class Container extends Item implements  Set<Item> {
 		if(!(o instanceof Item)) return false; //Containers only hold Items
 
 		if(contents.remove(o)) { //base case
-			((Item) o).setContainer(null);
 			wasModified();
 			return true;
 		}
 
-		for(Item item : contents) if(item instanceof Container && ((Container) item).remove(o)) return true; //recursive call
+		for(Item inner : contents) { //recursive case
+			if(inner instanceof Container && ((Container)inner).contains(o)) {
+				((Container) inner).remove(o);
+				return true;
+			}
+		}
 
 		return false;
 	}
@@ -226,11 +236,7 @@ public class Container extends Item implements  Set<Item> {
 	 * This allows any iterator's to trivially detect any concurrent modification to it or it's children.
 	 */
 	private void wasModified() {
-		Container container = getContainer();
 		modCount++;
-		if(container == null ) return;
-
-		container.wasModified();
 	}
 
 	private class ContainerIterator implements Iterator<Item> {
