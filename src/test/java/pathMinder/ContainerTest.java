@@ -273,6 +273,23 @@ public class ContainerTest {
 		for(int i = 0; i < 5; i++) iterator.next();
 		box.remove(iterator.next());
 		assertThrows(ConcurrentModificationException.class, iterator::next);
+		
+		//nested concurrent modifications
+		Box outer = new Box();
+		Box inner = new Box();
+		inner.add(new Ball());
+		inner.add(new Ball());
+		outer.add(inner);
+		
+		//Modifying inner should throw an error for outer's iterator
+		Iterator<Item> outerIterator = outer.iterator();
+		inner.add(new Ball());
+		assertThrows(ConcurrentModificationException.class, outerIterator::next);
+		
+		//Modifying outer should not throw an error for inner's iterator
+		Iterator<Item> innerIterator = inner.iterator();
+		outer.add(new Ball());
+		innerIterator.next();
 	}
 
 	private static class Box extends Container {

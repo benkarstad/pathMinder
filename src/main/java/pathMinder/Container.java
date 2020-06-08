@@ -18,7 +18,7 @@ import java.util.*;
  * <p>
  * TODO: add maxVolume and maxCount;
  */
-public class Container extends Item implements  Set<Item> {
+public class Container extends Item implements Set<Item> {
 
 	public static float getWeight(Collection<? extends Item> items) {
 		float weight = 0.0f;
@@ -37,6 +37,21 @@ public class Container extends Item implements  Set<Item> {
 	 */
 	private int modCount = 0;
 
+	/**
+	 * Used to dected concurrent modifications.
+	 * It checks the total modification count of all its children.
+	*/
+	private int getChildrenModCount() {
+		int childrenModCount = 0;
+
+		for(Item i : contents) {
+			if(i instanceof Container) {
+				childrenModCount += ((Container) i).modCount;
+			}
+		}
+
+		return childrenModCount;
+	}
 
 	protected Container(Collection<Item> contents, String name, float weight, float maxWeight, int cost) throws TooManyItemsException {
 		super(name, weight, cost);
@@ -287,18 +302,18 @@ public class Container extends Item implements  Set<Item> {
 		ContainerIterator(Container container) {
 			this.container = container;
 			contents = container.contents.iterator();
-			modCount = container.modCount;
+			modCount = container.modCount + container.getChildrenModCount();
 		}
 
 		@Override
 		public boolean hasNext() {
-			if(modCount != container.modCount) throw new ConcurrentModificationException();
+			if(modCount != container.modCount + container.getChildrenModCount()) throw new ConcurrentModificationException();
 			return contents.hasNext() || currentChild != null && currentChild.hasNext();
 		}
 
 		@Override
 		public Item next() {
-			if(modCount != container.modCount) throw new ConcurrentModificationException();
+			if(modCount != container.modCount + container.getChildrenModCount()) throw new ConcurrentModificationException();
 			if(currentChild != null && currentChild.hasNext()) return currentChild.next(); //return next in current child, if exists
 
 			//currentChild is Empty
