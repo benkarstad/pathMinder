@@ -102,6 +102,7 @@ public class Container extends Item implements  Set<Item> {
 	public boolean add(Item newItem) throws TooManyItemsException, IllegalArgumentException {
 		if(newItem == null) throw new NullPointerException(); //null item
 
+		//Item is already in a container
 		if(newItem.isContained())
 			return false;
 
@@ -192,6 +193,37 @@ public class Container extends Item implements  Set<Item> {
 	 */
 	@Override
 	public boolean removeAll(Collection items) { throw new UnsupportedOperationException(); }
+
+	/**
+	 * Instead of removing from the current container and adding to the new container,
+	 * this function does the necessary checks before hand and then modifies data directly
+	 * to improve performace.
+	 * 
+	 * @param item the item to be moved
+	 * @param newContainer the new container to move the item to
+	 * @return true if the item was successfully moved
+	 */
+	public boolean move(Item item, Container newContainer)
+	{
+		if(item == null) throw new NullPointerException(); //null item
+		if(!contains(item)) return false; //Item not located in this container
+		if(!newContainer.fits(item)) return false; //Item will not fit in the new container
+
+		//If the requested is contained within a contained item
+		if(!contents.remove(item)) {
+			for(Item i : contents) {
+				if(i instanceof Container && ((Container) i).contains(i)) { //If the item contains the requested item
+					((Container) i).contents.remove(item); 					//Remove it from its contents, and stop checking further items
+					break;
+				}
+			}
+		}
+
+		newContainer.contents.add(item);
+		wasModified();
+		newContainer.wasModified();
+		return true;
+	}
 
 	@Override
 	public boolean containsAll(Collection<?> items) {

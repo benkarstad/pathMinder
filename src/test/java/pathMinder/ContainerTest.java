@@ -38,6 +38,10 @@ public class ContainerTest {
 		//assertNull(ball.getContainer(), "removed ball should no longer have a parent"); ----Removal of items referencing their containers nullifies this test.----
 		assertEquals(0, innerBox.size(), "innerBox should be empty");
 		assertTrue(innerBox2.add(ball), "Ball should not be in another container.");
+		
+		assertTrue(innerBox2.move(ball, innerBox), "Ball should be moved to new container.");
+		assertTrue(innerBox.contains(ball), "innerBox should contain ball.");
+		assertFalse(innerBox2.contains(ball), "innerBox2 should no longer contain ball.");
 	}
 
 	@Test
