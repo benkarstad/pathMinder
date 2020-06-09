@@ -17,7 +17,7 @@ public enum Encumbrance {
 	Medium("Medium", +3, -3, 4) {
 		@Override
 		public int getSpeed(int baseSpeed) {
-			return (int) (5*Math.ceil(2*(float)baseSpeed/15));
+			return (int) (5*Math.ceil(2 * baseSpeed / 15.0f));
 		}
 		@Override
 		public int getCapacity(int strength) {

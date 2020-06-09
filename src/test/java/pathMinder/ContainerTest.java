@@ -12,7 +12,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ContainerTest {
 
 	@Test
-	public void add() {
+	public void testAdd() {
 		Box box = new Box();
 		for(int i = 0; i < 10; i++) {
 			assertTrue(box.add(new Ball()), "box was already full");
@@ -22,23 +22,30 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void remove() {
+	public void testRemove() {
 		Box box = new Box();
 		Box innerBox = new Box();
 		Ball ball = new Ball();
 		innerBox.add(ball);
+		Box innerBox2 = new Box();
+		assertFalse(innerBox2.add(ball), "Ball is in another container.");
 
 		assertFalse(box.remove(ball), "ball was not yet within box");
 		box.add(innerBox);
 		assertThrows(NullPointerException.class, ()->box.remove(null), "remove(Item) should not accept null arguments");
 		assertTrue(box.remove(ball), "ball should've been removed");
 		assertTrue(box.remove(innerBox), "innerBox should've been removed");
-		assertNull(ball.getContainer(), "removed ball should no longer have a parent");
+		//assertNull(ball.getContainer(), "removed ball should no longer have a parent"); ----Removal of items referencing their containers nullifies this test.----
 		assertEquals(0, innerBox.size(), "innerBox should be empty");
+		assertTrue(innerBox2.add(ball), "Ball should not be in another container.");
+		
+		assertTrue(innerBox2.move(ball, innerBox), "Ball should be moved to new container.");
+		assertTrue(innerBox.contains(ball), "innerBox should contain ball.");
+		assertFalse(innerBox2.contains(ball), "innerBox2 should no longer contain ball.");
 	}
 
 	@Test
-	public void getWeight() {
+	public void testGetWeight() {
 		//test empty weight
 		for(int i = 0; i < 100; i += 25) {
 			assertEquals(i, new Container(null, "TestContainer", i, 10, 1).getWeight());
@@ -76,7 +83,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void size()  {
+	public void testSize()  {
 		//test empty container
 		assertEquals(0, new Box().size(), "empty box should have size of zero");
 
@@ -109,7 +116,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void fits() {
+	public void testFits() {
 		//TooManyItems
 		{
 			Box box = new Box();
@@ -139,7 +146,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void contains() {
+	public void testContains() {
 
 		//self containing
 		{
@@ -195,7 +202,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void containsAll() {
+	public void testContainsAll() {
 
 		//throws on a null collection
 		assertThrows(NullPointerException.class, ()-> new Box().containsAll(null));
@@ -241,7 +248,7 @@ public class ContainerTest {
 	}
 
 	@Test
-	public void iterator() {
+	public void testIterator() {
 		Container box = new Box();
 		LinkedHashSet<Item> innerItems= new LinkedHashSet<>();
 
@@ -266,6 +273,23 @@ public class ContainerTest {
 		for(int i = 0; i < 5; i++) iterator.next();
 		box.remove(iterator.next());
 		assertThrows(ConcurrentModificationException.class, iterator::next);
+		
+		//nested concurrent modifications
+		Box outer = new Box();
+		Box inner = new Box();
+		inner.add(new Ball());
+		inner.add(new Ball());
+		outer.add(inner);
+		
+		//Modifying inner should throw an error for outer's iterator
+		Iterator<Item> outerIterator = outer.iterator();
+		inner.add(new Ball());
+		assertThrows(ConcurrentModificationException.class, outerIterator::next);
+		
+		//Modifying outer should not throw an error for inner's iterator
+		Iterator<Item> innerIterator = inner.iterator();
+		outer.add(new Ball());
+		innerIterator.next();
 	}
 
 	private static class Box extends Container {

@@ -13,7 +13,7 @@ import java.util.Set;
  * @see Character
  * @see Encumbrance
  */
-class Inventory extends ItemGroup{
+class Inventory extends ItemGroup {
 
 	private final Character holder;
 

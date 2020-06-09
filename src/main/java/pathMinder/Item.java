@@ -17,28 +17,16 @@ import java.util.Collection;
  * TODO: Implement intel based parameters;
  */
 public abstract class Item {
-
-	/**
-	 * Removes all the items in toRemove from their containers.
-	 * @param toRemove the collection of Items to be removed
-	 * @return true if all items were successfully removed
-	 */
-	public static boolean removeItems(Collection<? extends Item> toRemove) {
-		boolean flag = true;
-		for(Item item : toRemove.toArray(new Item[0])) if(!item.remove()) flag = false;
-		return flag;
-	}
-
 	/**
 	 * The name that identifies similar instances of an item. This does not uniquely identify this item,
 	 * to do that, the player may give their item a nickname.
 	 */
 	private final String name;
 	/**
-	 * The true base value of this item, measured in gold pieces. This number may be affected by other factors,
+	 * The true base value of this item, measured in copper pieces. This number may be affected by other factors,
 	 * such as being broken or masterwork.
 	 */
-	private final float cost;
+	private final int cost;
 	/**
 	 * The weight of this item, measured in pounds.
 	 */
@@ -49,12 +37,17 @@ public abstract class Item {
 	 */
 	public String nickName;
 	public String description;
-	private Container container = null; //the Container this item is within
+	private boolean contained;
 
-	protected Item(String name, float weight, float cost) {
+	protected Item(String name, float weight, int cost) {
 		this.name = name;
 		this.weight = weight;
 		this.cost = cost;
+		this.contained = false;
+	}
+
+	protected Item(Item item) {
+		this(item.name, item.weight, item.cost);
 	}
 
 	/**
@@ -76,29 +69,10 @@ public abstract class Item {
 	 */
 	public String getName() { return name; }
 
-	public boolean remove() { return container.remove(this); }
-
-	Container getContainer() { return container; }
+	public void setContained(boolean contained) { this.contained = contained; }
 
 	/**
-	 * Called by a container that this item has been added to
-	 * in order to maintain the doubly linked tree structure of inventories.
-	 * If newContainer==null, then this item effectively becomes the root of a new inventory tree.
-	 * <p>
-	 * @param newContainer the container this is being added to
-	 * @return true if this Item's container was changed to newContainer
-	 * @see Container
+	 * @return if the item is contained within a container
 	 */
-	boolean setContainer(Container newContainer) {
-		if(newContainer == null && !container.contains(this)) { //parented to null
-			container = null;
-			return true;
-		}
-		if(!newContainer.contains(this)) return false; //do not put 'this' in items that do not contain it
-
-		if(container != null) this.container.remove(this); //remove 'this' from it's previous container
-		this.container = newContainer; //add 'this' to it's new container
-
-		return true;
-	}
+	public boolean isContained() { return contained; }
 }
