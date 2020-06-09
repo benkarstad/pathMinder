@@ -66,13 +66,7 @@ public class Container extends Item implements Set<Item> {
 	 * @return the weight of this item and all of its contents.
 	 */
 	@Override
-	public float getWeight() {
-		float totalWeight = super.getWeight();
-		for(Item item : contents) {
-			totalWeight += item.getWeight();
-		}
-		return  totalWeight;
-	}
+	public float getWeight() { return getContentsWeight() + super.getWeight(); }
 
 	/**
 	 * Calculates the container's contents.
