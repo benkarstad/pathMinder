@@ -13,70 +13,121 @@ public class ContainerTest {
 
 	@Test
 	public void testAdd() {
-		Box box = new Box();
+
+		Bag bag1 = new Bag(),
+			bag2 = new Bag();
+
 		for(int i = 0; i < 10; i++) {
-			assertTrue(box.add(new Ball()), "box was already full");
+			Ball ball = new Ball( 1, 0.5f, 1);
+			//success case
+			assertTrue(bag1.add(ball), "bag1 was already full");
+
+			//failure cases
+			assertFalse(bag2.add(ball), "ball was already in bag1");
+			assertFalse(bag1.add(ball), "bag1 already contains ball");
 		}
 
-		assertThrows(TooManyItemsException.class, () -> box.add(new Ball()));
+		//Exception cases
+		assertThrows(TooManyItemsException.class, () -> bag1.add(new Ball()));
+		assertThrows(TooManyItemsException.class, ()-> { bag1.add(new Ball(0, 6f, 1)); });
 	}
 
 	@Test
 	public void testRemove() {
-		Box box = new Box();
-		Box innerBox = new Box();
+		Bag bag = new Bag();
+		Bag innerBag = new Bag();
 		Ball ball = new Ball();
-		innerBox.add(ball);
-		Box innerBox2 = new Box();
-		assertFalse(innerBox2.add(ball), "Ball is in another container.");
+		innerBag.add(ball);
+		Bag innerBag2 = new Bag();
+		assertFalse(innerBag2.add(ball), "Ball is in another container.");
 
-		assertFalse(box.remove(ball), "ball was not yet within box");
-		box.add(innerBox);
-		assertThrows(NullPointerException.class, ()->box.remove(null), "remove(Item) should not accept null arguments");
-		assertTrue(box.remove(ball), "ball should've been removed");
-		assertTrue(box.remove(innerBox), "innerBox should've been removed");
+		assertFalse(bag.remove(ball), "ball was not yet within bag");
+		bag.add(innerBag);
+		assertThrows(NullPointerException.class, ()->bag.remove(null), "remove(Item) should not accept null arguments");
+		assertTrue(bag.remove(ball), "ball should've been removed");
+		assertTrue(bag.remove(innerBag), "innerBag should've been removed");
 		//assertNull(ball.getContainer(), "removed ball should no longer have a parent"); ----Removal of items referencing their containers nullifies this test.----
-		assertEquals(0, innerBox.size(), "innerBox should be empty");
-		assertTrue(innerBox2.add(ball), "Ball should not be in another container.");
+		assertEquals(0, innerBag.size(), "innerBag should be empty");
+		assertTrue(innerBag2.add(ball), "Ball should not be in another container.");
 		
-		assertTrue(innerBox2.move(ball, innerBox), "Ball should be moved to new container.");
-		assertTrue(innerBox.contains(ball), "innerBox should contain ball.");
-		assertFalse(innerBox2.contains(ball), "innerBox2 should no longer contain ball.");
+		assertTrue(innerBag2.move(ball, innerBag), "Ball should be moved to new container.");
+		assertTrue(innerBag.contains(ball), "innerBag should contain ball.");
+		assertFalse(innerBag2.contains(ball), "innerBag2 should no longer contain ball.");
 	}
 
 	@Test
 	public void testGetWeight() {
 		//test empty weight
 		for(int i = 0; i < 100; i += 25) {
-			assertEquals(i, new Container(null, "TestContainer", i, 10, 1).getWeight());
+			assertEquals(i, new Ball(i, 1, 1).getWeight(), String.format("Weight should be %d", i));
 		}
 
 		//test with items one layer deep
 		{
-			Box box = new Box();
-			float weight = box.getWeight();
+			Bag bag = new Bag();
+			float weight = bag.getWeight();
 			for(int i = 1; i <= 10; i++) {
 				Item ball = new Ball();
 				weight += ball.getWeight();
-				box.add(ball);
-				assertEquals(weight, box.getWeight());
-				assertEquals(weight, Container.getWeight(box));
+				bag.add(ball);
+				assertEquals(weight, bag.getWeight());
+				assertEquals(weight, Container.getWeight(bag));
 			}
 		}
 
 		//test with multiple layers of nested Containers
 		{
-			Container box = new Box();
-			float weight = box.getWeight();
-			assertEquals(weight, box.getWeight());
+			Bag bag = new Bag();
+			float weight = bag.getWeight();
+			assertEquals(weight, bag.getWeight());
 			for(int i=0; i < 3; i++) {
-				Box innerBox = new Box();
-				innerBox.add(new Ball());
-				innerBox.add(new Ball());
-				weight += innerBox.getWeight();
-				box.add(innerBox);
-				assertEquals(weight, box.getWeight());
-				assertEquals(weight, Container.getWeight(box));
+				Bag innerBag = new Bag();
+				innerBag.add(new Ball());
+				innerBag.add(new Ball());
+				weight += innerBag.getWeight();
+				bag.add(innerBag);
+				assertEquals(weight, bag.getWeight());
+				assertEquals(weight, Container.getWeight(bag));
+			}
+		}
+
+	}
+
+	@Test
+	public void testGetVolume() {
+		//test empty volume
+		for(int i = 0; i < 100; i += 25) {
+			assertEquals(i, new Ball(i, 1, 1).getWeight(), String.format("Weight should be %d", i));
+		}
+		assertEquals(10f, new Box().getVolume()); //rigid container
+		assertEquals(0f, new Bag().getVolume()); //non-rigid container
+
+		//test with items one layer deep
+		{
+			Bag bag = new Bag();
+			float volume = bag.getVolume();
+			for(int i = 1; i <= 10; i++) {
+				Item ball = new Ball();
+				volume += ball.getVolume();
+				bag.add(ball);
+				assertEquals(volume, bag.getVolume());
+				assertEquals(volume, Container.getVolume(bag));
+			}
+		}
+
+		//test with multiple layers of nested Containers
+		{
+			Bag bag = new Bag();
+			float volume = bag.getVolume();
+			assertEquals(volume, bag.getVolume());
+			for(int i=0; i < 3; i++) {
+				Bag innerBag = new Bag();
+				innerBag.add(new Ball());
+				innerBag.add(new Ball());
+				volume += innerBag.getVolume();
+				bag.add(innerBag);
+				assertEquals(volume, bag.getVolume());
+				assertEquals(volume, Container.getVolume(bag));
 			}
 		}
 
@@ -85,32 +136,32 @@ public class ContainerTest {
 	@Test
 	public void testSize()  {
 		//test empty container
-		assertEquals(0, new Box().size(), "empty box should have size of zero");
+		assertEquals(0, new Bag().size(), "empty bag should have size of zero");
 
 		//test with items one layer deep
 		{
-			Box box = new Box();
+			Bag bag = new Bag();
 			int size = 0;
 			for(int i = 1; i <= 10; i++) {
 				Item ball = new Ball();
 				size++;
-				box.add(ball);
-				assertEquals(size, box.size());
+				bag.add(ball);
+				assertEquals(size, bag.size());
 			}
 		}
 
 		//test with multiple layers of nested Containers
 		{
-			Container box = new Box();
+			Bag bag = new Bag();
 			int size = 0;
-			assertEquals(size, box.size());
+			assertEquals(size, bag.size());
 			for(int i=0; i < 3; i++) {
-				Box innerBox = new Box();
-				innerBox.add(new Ball());
-				innerBox.add(new Ball());
-				size += 1+innerBox.size(); // one extra for the box itself
-				box.add(innerBox);
-				assertEquals(size, box.size());
+				Bag innerBag = new Bag();
+				innerBag.add(new Ball());
+				innerBag.add(new Ball());
+				size += 1+innerBag.size(); // one extra for the bag itself
+				bag.add(innerBag);
+				assertEquals(size, bag.size());
 			}
 		}
 	}
@@ -119,29 +170,29 @@ public class ContainerTest {
 	public void testFits() {
 		//TooManyItems
 		{
-			Box box = new Box();
+			Bag bag = new Bag();
 			for(int i = 0; i < 10; i++) {
 				Ball ball = new Ball();
-				assertTrue(box.fits(ball), "the ball should fit");
-				box.add(ball);
+				assertTrue(bag.fits(ball), "the ball should fit");
+				bag.add(ball);
 			}
-			assertFalse(box.fits(new Ball()), "the ball should not fit");
+			assertFalse(bag.fits(new Ball()), "the ball should not fit");
 		}
 
 		//insert self
 		{
-			Box box = new Box();
-			assertFalse(box.fits(box));
+			Bag bag = new Bag();
+			assertFalse(bag.fits(bag));
 		}
 
 		//insert parent
 		{
-			Box
-					box = new Box(),
-					innerBox = new Box();
+			Bag
+					bag = new Bag(),
+					innerBag = new Bag();
 
-			assertTrue(box.add(innerBox));
-			assertFalse(innerBox.fits(box));
+			assertTrue(bag.add(innerBag));
+			assertFalse(innerBag.fits(bag));
 		}
 	}
 
@@ -150,53 +201,53 @@ public class ContainerTest {
 
 		//self containing
 		{
-			Box box = new Box();
-			assertFalse(box.contains(box));
+			Bag bag = new Bag();
+			assertFalse(bag.contains(bag));
 		}
 
 		//inserted and removed items
 		{
-			Box box = new Box();
+			Bag bag = new Bag();
 			Ball[] balls = new Ball[10];
 
 			for(int i = 0; i < 10; i++) {
 				Ball ball = new Ball();
 				ball = new Ball();
-				assertFalse(box.contains(ball), "box should not yet contain this item");
-				box.add(ball);
+				assertFalse(bag.contains(ball), "bag should not yet contain this item");
+				bag.add(ball);
 				balls[i] = ball;
-				assertTrue(box.contains(ball), "box should contain this item");
+				assertTrue(bag.contains(ball), "bag should contain this item");
 			}
 
 			for(Ball ball : balls) {
-				assertTrue(box.contains(ball), "box should contain this item");
-				box.remove(ball);
-				assertFalse(box.contains(ball), "box should not contain this item anymore");
+				assertTrue(bag.contains(ball), "bag should contain this item");
+				bag.remove(ball);
+				assertFalse(bag.contains(ball), "bag should not contain this item anymore");
 			}
 		}
 
 		//test with multiple layers of nested Containers
 		{
-			Container box = new Box();
+			Bag bag = new Bag();
 			LinkedHashSet<Item> innerItems= new LinkedHashSet<>();
 
 			for(int i = 0; i < 3; i++) {
-				Box innerBox = new Box();
+				Bag innerBag = new Bag();
 				Ball ball1 = new Ball();
 				Ball ball2 = new Ball();
-				innerBox.add(ball1);
-				innerBox.add(ball2);
-				innerItems.add(innerBox);
+				innerBag.add(ball1);
+				innerBag.add(ball2);
+				innerItems.add(innerBag);
 				innerItems.add(ball1);
 				innerItems.add(ball2);
-				box.add(innerBox);
-				for(Item item : innerItems) assertTrue(box.contains(item), "box should contain this item");
+				bag.add(innerBag);
+				for(Item item : innerItems) assertTrue(bag.contains(item), "bag should contain this item");
 			}
 
 			//after removal
 			for(Item item : innerItems) {
-				box.remove(item);
-				assertFalse(box.contains(item));
+				bag.remove(item);
+				assertFalse(bag.contains(item));
 			}
 		}
 	}
@@ -205,43 +256,31 @@ public class ContainerTest {
 	public void testContainsAll() {
 
 		//throws on a null collection
-		assertThrows(NullPointerException.class, ()-> new Box().containsAll(null));
-
-		//contains an empty Collection
-		{
-			Container box = new Box();
-
-			for(int i = 0; i < 3; i++) {
-				Box innerBox = new Box();
-				innerBox.add(new Ball());
-				innerBox.add(new Ball());
-				box.add(innerBox);
-			}
-		}
+		assertThrows(NullPointerException.class, ()-> new Bag().containsAll(null));
 
 		//test with multiple layers of nested Containers
 		{
-			Container box = new Box();
+			Bag bag = new Bag();
 			LinkedHashSet<Item> innerItems= new LinkedHashSet<>();
 
 			for(int i = 0; i < 3; i++) {
-				Box innerBox = new Box();
+				Bag innerBag = new Bag();
 				Ball ball1 = new Ball();
 				Ball ball2 = new Ball();
-				innerBox.add(ball1);
-				innerBox.add(ball2);
+				innerBag.add(ball1);
+				innerBag.add(ball2);
 				innerItems.add(ball1);
 				innerItems.add(ball2);
-				innerItems.add(innerBox);
-				box.add(innerBox);
-				assertTrue(box.containsAll(innerItems), "box should contain these items");
+				innerItems.add(innerBag);
+				bag.add(innerBag);
+				assertTrue(bag.containsAll(innerItems), "bag should contain these items");
 			}
 
 			//after removal
 			for(Iterator<Item> iterator = innerItems.iterator(); iterator.hasNext();) {
-				assertTrue(box.containsAll(innerItems)); //box contains all items
-				assertTrue(box.remove(iterator.next())); //remove one item from box
-				assertFalse(box.containsAll(innerItems)); //box no longer contains all items
+				assertTrue(bag.containsAll(innerItems)); //bag contains all items
+				assertTrue(bag.remove(iterator.next())); //remove one item from bag
+				assertFalse(bag.containsAll(innerItems)); //bag no longer contains all items
 				iterator.remove(); //disregard removed item
 			}
 		}
@@ -249,34 +288,34 @@ public class ContainerTest {
 
 	@Test
 	public void testIterator() {
-		Container box = new Box();
+		Bag bag = new Bag();
 		LinkedHashSet<Item> innerItems= new LinkedHashSet<>();
 
 		for(int i = 0; i < 3; i++) {
-			Box innerBox = new Box();
+			Bag innerBag = new Bag();
 			Ball ball1 = new Ball();
 			Ball ball2 = new Ball();
-			innerBox.add(ball1);
-			innerBox.add(ball2);
+			innerBag.add(ball1);
+			innerBag.add(ball2);
 			innerItems.add(ball1);
 			innerItems.add(ball2);
-			innerItems.add(innerBox);
-			box.add(innerBox);
+			innerItems.add(innerBag);
+			bag.add(innerBag);
 		}
 
-		for(Item item : box) innerItems.remove(item);
+		for(Item item : bag) innerItems.remove(item);
 		assertEquals(0, innerItems.size());
 
 		//concurrent modifications
 
-		Iterator<Item> iterator = box.iterator();
+		Iterator<Item> iterator = bag.iterator();
 		for(int i = 0; i < 5; i++) iterator.next();
-		box.remove(iterator.next());
+		bag.remove(iterator.next());
 		assertThrows(ConcurrentModificationException.class, iterator::next);
 		
 		//nested concurrent modifications
-		Box outer = new Box();
-		Box inner = new Box();
+		Bag outer = new Bag();
+		Bag inner = new Bag();
 		inner.add(new Ball());
 		inner.add(new Ball());
 		outer.add(inner);
@@ -293,16 +332,13 @@ public class ContainerTest {
 	}
 
 	private static class Box extends Container {
-		public Box() {super(null, "Box", 1, 10, 1);}
-
-		/**
-		 * @return a Box instance full of Balls
-		 */
-		public static Box getFullInstance() {
-			Box box = new Box();
-			for(Ball newBall = new Ball(); box.fits(newBall); newBall = new Ball()) box.add(newBall);
-			return box;
-		}
+		public Box() {super("Box", 1, 0f, 1000, 10, 10, 10, true); }
 	}
-	private static class Ball extends Item {public Ball() {super("Ball", 1, 1);}}
+	private static class Bag extends Container {
+		public Bag() {super("Bag", 1, 0f, 1000, 10, 10, 10, false); }
+	}
+	private static class Ball extends Item {
+		public Ball() {this(1, 1, 1);}
+		public Ball(float weight, float volume, int cost) { super("Ball", weight, volume, cost); }
+	}
 }

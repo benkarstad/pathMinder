@@ -18,28 +18,42 @@ import java.util.*;
  * <p>
  * TODO: add maxVolume and maxCount;
  */
-public class Container extends Item implements Set<Item> {
+public abstract class Container extends Item implements Set<Item> {
 
 	public static float getWeight(Collection<? extends Item> items) {
 		float weight = 0.0f;
 		for(Item item : items) { weight += item.getWeight(); }
 		return weight;
 	}
-	
+
 	public static float getWeight(Container items) { return items.getWeight(); }
 
-	private final HashSet<Item> contents;
-	private final float maxWeight; //the maximum weight a container can hold
+	public static float getVolume(Collection<? extends Item> items) {
+		float volume = 0.0f;
+		for(Item item : items) { volume += item.getVolume(); }
+		return volume;
+	}
 
-	/**
-	 * Used to detect concurrent modifications.
-	 * Incremented each time this container or any descendant containers have their backing Set modified.
-	 */
+	public static float getVolume(Container items) { return items.getVolume(); }
+
+	private final HashSet<Item> contents;
+
+
+	//limits on the amount a Container can hold
+	private final float maxWeight; //the maximum weight (in pounds)
+	private final float maxVolume; //the maximum volume (in cubic feet)
+	private final int maxCount; //the maximum number of items
+
+	private final boolean rigid; //a rigid container's volume does not change as it fills
+
+	//Used to detect concurrent modifications.
+	//Incremented each time this container has its backing Set modified.
 	private int modCount = 0;
 
 	/**
-	 * Used to dected concurrent modifications.
-	 * It checks the total modification count of all its children.
+	 * Used to detect concurrent modifications.
+	 * It checks the total modification count of itself and all its children.
+	 * @return the sum of all the structural modifications to this container and its children
 	*/
 	private int getChildrenModCount() {
 		int childrenModCount = 0;
@@ -53,23 +67,27 @@ public class Container extends Item implements Set<Item> {
 		return childrenModCount;
 	}
 
-	protected Container(Collection<Item> contents, String name, float weight, float maxWeight, int cost) throws TooManyItemsException {
-		super(name, weight, cost);
-		if(contents != null && Container.getWeight(contents) > maxWeight) throw new TooManyItemsException("Contents exceed container's maximum weight");
+	protected Container(String name, float weight, float volume, int cost,
+						float maxWeight, float maxVolume, int maxCount, boolean rigid) {
+		super(name, weight, volume, cost);
+
 		this.maxWeight = maxWeight;
-		this.contents = (contents == null) ? new LinkedHashSet<>(15) : new LinkedHashSet<>(contents);
+		this.maxVolume = maxVolume;
+		this.maxCount = maxCount;
+		this.rigid = rigid;
+
+		contents = new LinkedHashSet<>();
 	}
 
 	/**
 	 * Calculates the weight of this and its contents.
-	 * This method will recursively traverse the entire contents of itself.
 	 * @return the weight of this item and all of its contents.
 	 */
 	@Override
-	public float getWeight() { return getContentsWeight() + super.getWeight(); }
+	public float getWeight() { return super.getWeight() + getContentsWeight(); }
 
 	/**
-	 * Calculates the container's contents.
+	 * Calculates the weight of the container's contents.
 	 * This method will recursively traverse the entire contents of itself.
 	 * @return the weight of all of its contents.
 	 */
@@ -82,14 +100,38 @@ public class Container extends Item implements Set<Item> {
 	}
 
 	/**
+	 * Calculates the sum of the volume of this and its contents.
+	 * This method will recursively traverse the entire contents of itself.
+	 * A rigid container's volume is instead always calculated as though it were completely full
+	 * @return the volume of this item and all of its contents.
+	 */
+	@Override
+	public float getVolume() { return rigid ? super.getVolume() + maxVolume : super.getVolume() + getContentsVolume(); }
+
+	public float getContentsVolume() {
+		float totalVolume = 0;
+		for(Item item : contents) {
+			totalVolume += item.getVolume();
+		}
+
+		return totalVolume;
+	}
+
+	public int getCount() { return contents.size(); }
+
+	/**
 	 * Checks if adding the specified item would violate any constraints.
 	 * Formally, given an element e where fits(e)==true, it can be assumed that add(e) will not throw any exceptions.
 	 * @param item the item in question
 	 * @return false if attempting to add the specified element to this container would result in an exception
+	 * @throws NullPointerException if a null Item is supplied
 	 */
 	public boolean fits(Item item) {
 		if(item == null) throw new NullPointerException(); //null item
-		if(getContentsWeight() + item.getWeight() > maxWeight || //weight restriction
+		if(
+			getContentsWeight() + item.getWeight() > maxWeight || //weight restriction
+			getContentsVolume() + item.getVolume() > maxVolume || //volume restriction
+			contents.size() >= maxCount || //count restriction
 			item instanceof Container && (item == this || ((Container) item).contains(this))) //self-containing restriction
 			return false;
 
@@ -283,9 +325,7 @@ public class Container extends Item implements Set<Item> {
 	 * its modCount and the modCount of all it's ancestor Containers are incremented.
 	 * This allows any iterator's to trivially detect any concurrent modification to it or it's children.
 	 */
-	private void wasModified() {
-		modCount++;
-	}
+	private void wasModified() { modCount++; }
 
 	private class ContainerIterator implements Iterator<Item> {
 

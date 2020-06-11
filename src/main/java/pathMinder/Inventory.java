@@ -17,9 +17,8 @@ class Inventory extends ItemGroup {
 
 	private final Character holder;
 
-	Inventory(Character character) { this(character, null); }
-	Inventory(Character character, Set<Item> contents) {
-		super(contents, String.format("%s's inventory", character.getName()), Integer.MAX_VALUE);
+	Inventory(Character character) {
+		super(String.format("%s's inventory", character.getName()), Float.MAX_VALUE, Float.MAX_VALUE, Integer.MAX_VALUE);
 		holder = character;
 	}
 

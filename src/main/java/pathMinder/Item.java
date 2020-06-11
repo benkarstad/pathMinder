@@ -17,20 +17,26 @@ import java.util.Collection;
  * TODO: Implement intel based parameters;
  */
 public abstract class Item {
+
 	/**
 	 * The name that identifies similar instances of an item. This does not uniquely identify this item,
 	 * to do that, the player may give their item a nickname.
 	 */
 	private final String name;
+
 	/**
 	 * The true base value of this item, measured in copper pieces. This number may be affected by other factors,
 	 * such as being broken or masterwork.
 	 */
 	private final int cost;
+
 	/**
 	 * The weight of this item, measured in pounds.
 	 */
 	private final float weight;
+
+	private final float volume;
+
 	/**
 	 * This may be set by the user to identify specific instances of an item,
 	 * such as a lucky arrow or a backpack filled with valuables.
@@ -39,15 +45,16 @@ public abstract class Item {
 	public String description;
 	private boolean contained;
 
-	protected Item(String name, float weight, int cost) {
+	protected Item(String name, float weight, float volume, int cost) {
 		this.name = name;
 		this.weight = weight;
+		this.volume = volume;
 		this.cost = cost;
 		this.contained = false;
 	}
 
 	protected Item(Item item) {
-		this(item.name, item.weight, item.cost);
+		this(item.name, item.weight, item.volume, item.cost);
 	}
 
 	/**
@@ -58,6 +65,12 @@ public abstract class Item {
 	 * @return the weight of the item
 	 */
 	public float getWeight() { return weight; }
+
+	/**
+	 * Returns the volume of this item.
+	 * @return the volume of this item.
+	 */
+	public float getVolume() { return volume; }
 
 	/**
 	 * @return the cost of the item
