@@ -1,4 +1,4 @@
-package pathMinder;
+package pathMinder.core;
 
 public class Barrel extends Container {
 	public Barrel() {

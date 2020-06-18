@@ -1,4 +1,4 @@
-package pathMinder;
+package pathMinder.core;
 
 /**
  * Thrown to indicate that a Container cannot accept the supplied items due to

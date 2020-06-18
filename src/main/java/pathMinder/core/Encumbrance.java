@@ -1,4 +1,4 @@
-package pathMinder;
+package pathMinder.core;
 //TODO: Implement Encumbrance for various sizes, leg counts, etc.
 /**
  * ... See Core Rulebook Ch.7 (Carrying Capacity)

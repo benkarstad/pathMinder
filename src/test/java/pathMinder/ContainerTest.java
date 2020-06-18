@@ -2,6 +2,9 @@ package pathMinder;
 
 
 import org.junit.jupiter.api.Test;
+import pathMinder.core.Container;
+import pathMinder.core.Item;
+import pathMinder.core.TooManyItemsException;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;

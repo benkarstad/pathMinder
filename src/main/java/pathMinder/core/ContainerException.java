@@ -1,4 +1,4 @@
-package pathMinder;
+package pathMinder.core;
 
 /**
  * Signals that the requested operation could not be performed by a container.

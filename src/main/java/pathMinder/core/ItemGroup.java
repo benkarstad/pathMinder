@@ -1,6 +1,4 @@
-package pathMinder;
-
-import java.util.Set;
+package pathMinder.core;
 
 /**
  * A conceptual group of items. This represents a group of items that,

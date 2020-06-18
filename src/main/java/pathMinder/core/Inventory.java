@@ -1,6 +1,4 @@
-package pathMinder;
-
-import java.util.Set;
+package pathMinder.core;
 
 /**
  * A special ItemGroup linked to a Character. Each character has one, and only one, inventory.

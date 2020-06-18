@@ -1,6 +1,4 @@
-package pathMinder;
-
-import java.util.Collection;
+package pathMinder.core;
 
 /**
  * A physical item. Items have a number of attributes; some, like their weight, can be easily determined by empirical means.

@@ -1,6 +1,4 @@
-package pathMinder;
-
-import java.util.Collection;
+package pathMinder.core;
 
 public class Backpack extends Container{
 	public Backpack() { this("Backpack, common", 2f, 1/4f, 2); }

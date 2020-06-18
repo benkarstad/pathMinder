@@ -3,6 +3,8 @@ package pathMinder;
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.Test;
+import pathMinder.core.*;
+import pathMinder.core.Character;
 
 import static org.junit.jupiter.api.Assertions.*;
 

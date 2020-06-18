@@ -1,4 +1,4 @@
-package pathMinder;
+package pathMinder.core;
 
 public class BeltPouch extends Container {
 	public BeltPouch() {

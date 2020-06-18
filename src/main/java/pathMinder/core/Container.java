@@ -1,4 +1,4 @@
-package pathMinder;
+package pathMinder.core;
 
 import java.util.*;
 
