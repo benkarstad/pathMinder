@@ -2,15 +2,15 @@ package pathMinder;
 
 
 import org.junit.jupiter.api.Test;
-import pathMinder.core.Container;
-import pathMinder.core.Item;
-import pathMinder.core.TooManyItemsException;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 
-import static org.junit.jupiter.api.Assertions.*;
+import pathMinder.core.Container;
+import pathMinder.core.Item;
+import pathMinder.core.TooManyItemsException;
 
 public class ContainerTest {
 
