@@ -97,23 +97,19 @@ public enum Encumbrance {
 
 	/**
 	 * Calculates the speed of a player based on their base speed.
-	 * This method is dependent upon the encumbrance value of a player,
-	 * and thus cannot be called on the base enum.
 	 * <p>
 	 * See Core Rulebook Ch.7 (Armor and Encumbrance for Other Base Speeds)
 	 * @param baseSpeed the base speed at which the player runs
 	 * @return the modified speed, based on the player's encumbrance value
 	 */
-	public int getSpeed(int baseSpeed) throws UnsupportedOperationException { throw new UnsupportedOperationException("Must be called on a value"); }
+	public abstract int getSpeed(int baseSpeed);
 
 	/**
-	 * Calculates the maximum weight a player can carry without increasing their encumbrance.
-	 * This method is dependent upon the encumbrance value of a player,
-	 * and thus must be called on an encumbrance value.
+	 * Calculates the maximum weight a player at a given Encumbrance can carry without increasing their encumbrance.
 	 * <p>
 	 * See Core Rulebook Ch.7 (Table 7-4)
 	 * @param strength the strength value of the character;
 	 * @return the maximum equipment weight before increasing encumbrance
 	 */
-	public int getCapacity(int strength) throws UnsupportedOperationException { throw new UnsupportedOperationException("Must be called on a value"); }
+	public abstract int getCapacity(int strength);
 }
