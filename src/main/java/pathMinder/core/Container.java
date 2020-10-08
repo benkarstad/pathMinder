@@ -15,17 +15,29 @@ import java.util.*;
  * All methods inherited from the Set interface treat Containers as a tree;
  * all elements within a Container and its children are treated as elements of that container for the purpose of these methods.
  * Other methods exist for manipulating only the direct child elements of a Container.
- * <p>
- * TODO: add maxVolume and maxCount;
  */
 public abstract class Container extends Item implements Set<Item> {
 
+	/**
+	 * Calculates the total weight of a collection of items.
+	 * <p>
+	 * Note that a Container cast as a collection will not have the
+	 * weight of the container itself counted.
+	 *
+	 * @param items the collection of items to be computed.
+	 * @return the combined weight of all the items.
+	 */
 	public static float getWeight(Collection<? extends Item> items) {
 		float weight = 0.0f;
 		for(Item item : items) { weight += item.getWeight(); }
 		return weight;
 	}
 
+	/**
+	 * Calculates the weight of a container and all of its contents.
+	 * @param items
+	 * @return
+	 */
 	public static float getWeight(Container items) { return items.getWeight(); }
 
 	public static float getVolume(Collection<? extends Item> items) {
@@ -276,6 +288,12 @@ public abstract class Container extends Item implements Set<Item> {
 		return true;
 	}
 
+	/**
+	 * Returns true iff all Objects in the passed container are within this container.
+	 * More formally, returns false if for any element o in items, this.contains(o) == false.
+	 * @param items a collection of items.
+	 * @return true if all items are within this container.
+	 */
 	@Override
 	public boolean containsAll(Collection<?> items) {
 		if(items == null) throw new NullPointerException();

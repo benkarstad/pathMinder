@@ -32,7 +32,9 @@ public abstract class Item {
 	 * The weight of this item, measured in pounds.
 	 */
 	private final float weight;
-
+	/**
+	 * The volume of this item, measured in cubic feet.
+	 */
 	private final float volume;
 
 	/**
@@ -40,7 +42,14 @@ public abstract class Item {
 	 * such as a lucky arrow or a backpack filled with valuables.
 	 */
 	public String nickName;
+	/**
+	 * This may be set by the user to describe specific instances of an item,
+	 * such as a lucky arrow or a backpack filled with valuables.
+	 */
 	public String description;
+	/**
+	 * true if this item is in a container.
+	 */
 	private boolean contained;
 
 	protected Item(String name, float weight, float volume, int cost) {
@@ -65,7 +74,8 @@ public abstract class Item {
 	public float getWeight() { return weight; }
 
 	/**
-	 * Returns the volume of this item.
+	 * Returns the volume of this item. This value is not necessarily constant,
+	 * for example, some containers' volumes will grow and shrink with their contents.
 	 * @return the volume of this item.
 	 */
 	public float getVolume() { return volume; }

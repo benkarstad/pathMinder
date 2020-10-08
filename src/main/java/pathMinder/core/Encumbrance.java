@@ -62,7 +62,10 @@ public enum Encumbrance {
 		}
 	}; //This value is physically impossible, the player should not be able to proceed in this state.
 
-	private static final int[] strengthVals = {0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 115, 130, 150, 175, 200, 230, 260, 300, 350, 400, 460, 520, 600, 700, 800, 920, 1040, 1200, 1400};
+	private static final int[] strengthVals = {
+			0, 10, 20, 30, 40, 50, 60, 70, 80, 90,
+			100, 115, 130, 150, 175, 200, 230, 260, 300, 350,
+			400, 460, 520, 600, 700, 800, 920, 1040, 1200, 1400};
 
 	private final String name;
 	public final int maxDex; //Maximum dexterity bonus to armor class
@@ -83,7 +86,7 @@ public enum Encumbrance {
 	 * <p>
 	 * See Core Rulebook Ch.7 (Table 7-4)
 	 * @param equipmentWeight the total weight that the character is carrying.
-	 * @param strength the stength score of the creature
+	 * @param strength the strength score of the creature
 	 * @return the encumbrance level of the creature
 	 */
 	public static Encumbrance getEncumbrance(float equipmentWeight, int strength) { //iterates through and finds the lowest Encumbrance value that equipmentWeight does not exceed;
